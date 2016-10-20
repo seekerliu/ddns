@@ -23,18 +23,21 @@ class Dns
 
     public function __construct()
     {
+        //初始化缓存
         $this->cache = new FilesystemCache(__DIR__ . '/../cache/');
-        $this->ip = $this->getCurrentIp();
 
+        //设置DNSPOD需要的User-Agent,login_token,format参数
         $this->options['headers']['User-Agent'] = getenv('DNSPOD_CLIENT');
         $this->options['form_params'] = [
             'login_token' => join(',', [getenv('DNSPOD_ID') , getenv('DNSPOD_TOKEN')]),
             'format' => 'json',
         ];
-        $this->baseUri = getenv('DNSPOD_URI');
-        $this->domain = getenv('DOMAIN');
-        $this->subDomain = getenv('SUB_DOMAIN');
 
+        $this->baseUri = getenv('DNSPOD_URI');  //DNSPOD api
+        $this->domain = getenv('DOMAIN');   //域名
+        $this->subDomain = getenv('SUB_DOMAIN');    //二级域名
+
+        //初始化日志
         $this->log = new Logger('dynamicDns');
         $this->log->pushHandler(new StreamHandler(__DIR__ . '/../log/dynamicDns.log', Logger::INFO));
     }
