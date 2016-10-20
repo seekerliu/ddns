@@ -3,3 +3,4 @@ vendor/
 cache/
 .idea/
 .DS_Store
+log/

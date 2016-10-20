@@ -8,6 +8,8 @@
 namespace App;
 use Doctrine\Common\Cache\FilesystemCache;
 use GuzzleHttp\Client;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class Dns
 {
@@ -17,6 +19,7 @@ class Dns
     private $baseUri;
     private $domain;
     private $subDomain;
+    private $log;
 
     public function __construct()
     {
@@ -31,6 +34,9 @@ class Dns
         $this->baseUri = getenv('DNSPOD_URI');
         $this->domain = getenv('DOMAIN');
         $this->subDomain = getenv('SUB_DOMAIN');
+
+        $this->log = new Logger('dynamicDns');
+        $this->log->pushHandler(new StreamHandler(__DIR__ . '/../log/dynamicDns.log', Logger::INFO));
     }
 
     /**
@@ -74,11 +80,13 @@ class Dns
         $response = $this->http('POST', 'Record.Ddns', $options);
 
         //更新缓存
-        if($response->status->code == 1)
+        if($response->status->code == 1) {
             $this->fetchAndCacheRecordList($this->domain);
 
-        //记录日志
-        $this->log($response);
+            //记录日志
+            $this->log->info('更新IP:', [$response->record->value]);
+        }
+
     }
 
     /**
@@ -154,11 +162,4 @@ class Dns
         $recordList = $client->request($method, $uri, $options);
         return json_decode($recordList->getBody());
     }
-
-    //生成日志
-    public function log($response)
-    {
-        echo '更新成功!, 新的IP:'.$response->record->value;
-    }
-
 }
