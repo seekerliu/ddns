@@ -17,6 +17,6 @@ composer update
 ##4.设置计划任务
 执行:crontab -e,添加如下一行(每分钟执行一次):
 
-*/1 * * * * php ~/Code/dynamicDns/public/index.php
+*/1 * * * * /usr/local/bin/php ~/Code/dynamicDns/public/index.php
 
 执行:sudo service cron restart
