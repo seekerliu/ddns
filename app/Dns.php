@@ -58,7 +58,7 @@ class Dns
         $ip = '127.0.0.1';
         $eth = getenv('ETH_NAME');
 
-        $command = 'sudo ifconfig '. $eth. ' | grep inet';
+        $command = 'sudo ifconfig '. $eth. ' | grep netmask';
         $ipInfo = exec($command);
         $result = preg_match_all('/inet(.*?)netmask/', $ipInfo, $match);
         if($result)
