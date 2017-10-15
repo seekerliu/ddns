@@ -53,15 +53,34 @@ class Dns
         }
     }
 
-    /**
-     * 获取本地的公网IP
-     */
-    public function getCurrentIp()
+    public function getLocalIP()
+    {
+        $ip = '127.0.0.1';
+        $eth = getenv('ETH_NAME');
+
+        $command = 'sudo ifconfig '. $eth. ' | grep inet';
+        $ipInfo = exec($command);
+        $result = preg_match_all('/inet(.*?)netmask/', $ipInfo, $match);
+        if($result)
+            $ip = $match[1][0];
+
+        return $ip;
+    }
+
+    public function getInternetIp()
     {
         $client = new Client(['base_uri' => getenv('GET_IP_URI')]);
         $response = $client->request('GET');
         $ip = json_decode($response->getBody())->ip;
         return $ip;
+    }
+
+    public function getCurrentIp()
+    {
+        if(getenv('GET_LOCAL_IP'))
+            return $this->getLocalIp();
+        else
+            return $this->getInternetIp();
     }
 
     /**
