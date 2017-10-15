@@ -62,7 +62,7 @@ class Dns
         $ipInfo = exec($command);
         $result = preg_match_all('/inet(.*?)netmask/', $ipInfo, $match);
         if($result)
-            $ip = $match[1][0];
+            $ip = trim($match[1][0]);
 
         return $ip;
     }
@@ -77,7 +77,7 @@ class Dns
 
     public function getCurrentIp()
     {
-        if(getenv('GET_LOCAL_IP'))
+        if(getenv('GET_LOCAL_IP') == 'true')
             return $this->getLocalIp();
         else
             return $this->getInternetIp();
